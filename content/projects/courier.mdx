@@ -1,0 +1,278 @@
+---
+title: "Courier Management System"
+slug: "courier"
+subtitle: "Logistics & Dispatch Platform"
+description: "Complete courier operations platform with 500+ contributions, 5-language support, and real-time tracking"
+industry: "logistics"
+portals: ["Admin Dashboard", "Tracking Portal", "Backend API"]
+tech: ["React", "TypeScript", "Bootstrap", "Node.js", "PostgreSQL", "i18next"]
+metrics:
+  - { label: "Contributions", value: "500+" }
+  - { label: "API Integrations", value: "80+" }
+  - { label: "Languages Supported", value: "5+" }
+challenges: ["Internationalization with RTL/LTR", "Role-based access control", "Performance optimization for large datasets"]
+order: 4
+featured: true
+---
+
+## The Problem
+
+A logistics company needed a complete courier management platform to handle shipment tracking, dispatch workflows, route optimization, and reporting — all while supporting **5+ languages** (Urdu, Arabic, Turkish, Farsi, Persian) with **right-to-left (RTL) and left-to-right (LTR) text rendering**. The platform had to scale to hundreds of daily shipments with real-time tracking and role-based dashboards for admins and supervisors.
+
+## What Made It Hard
+
+### Internationalization (i18n) with RTL/LTR
+Supporting multiple languages isn't just translation:
+- **RTL languages** (Arabic, Urdu, Farsi) flip entire layout
+- Components must mirror (sidebar moves from left to right)
+- Icons and arrows need direction-aware rendering
+- Forms, tables, and date pickers must adapt
+- **Mixed content**: English tracking ID in Arabic UI
+
+**Challenge**: Building a component library that adapts to text direction without duplicating code.
+
+### Performance with Large Datasets
+Admin dashboards displayed:
+- 500+ shipments per page
+- Real-time status updates every 30 seconds
+- Excel exports with 10,000+ rows
+- Complex filtering (date range, status, courier, route)
+- Map view with 200+ simultaneous pins
+
+**Problem**: React re-renders entire table on every update → UI freezes.
+
+### Role-Based Access Control (RBAC)
+Two user types with different permissions:
+- **Admin**: Full access (create, edit, delete shipments, manage users)
+- **Supervisor**: Read-only dashboards, can update status, no deletion
+
+**Complexity**:
+- Permissions checked on every API call (backend) and UI element (frontend)
+- Some features partially restricted (supervisor can update status but not edit customer details)
+- Audit trail required for compliance
+
+## My Solution
+
+### Comprehensive Internationalization Architecture
+Built **direction-aware component system** using `i18next` and CSS logical properties:
+
+```typescript
+// Language configuration
+const languages = {
+  en: { dir: 'ltr', label: 'English' },
+  ar: { dir: 'rtl', label: 'العربية' },
+  ur: { dir: 'rtl', label: 'اردو' },
+  tr: { dir: 'ltr', label: 'Türkçe' },
+  fa: { dir: 'rtl', label: 'فارسی' },
+};
+
+// Component adapts to direction
+function ShipmentCard({ shipment }: Props) {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.dir() === 'rtl';
+  
+  return (
+    <div className={`card ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className="card-icon" style={{
+        [isRTL ? 'marginLeft' : 'marginRight']: '12px'
+      }}>
+        <ChevronIcon direction={isRTL ? 'left' : 'right'} />
+      </div>
+      <h3>{t('shipment.title')}</h3>
+    </div>
+  );
+}
+```
+
+**CSS Approach**:
+- Used CSS logical properties (`margin-inline-start` instead of `margin-left`)
+- Direction-agnostic spacing (`padding-inline`, `border-inline`)
+- Global `[dir="rtl"]` selector for layout flips
+- Bootstrap RTL stylesheet loaded conditionally
+
+**Translation Management**:
+- 80+ API endpoints translated (success/error messages)
+- Centralized translation files per language (`en.json`, `ar.json`)
+- Context-aware translations (e.g., "Delivered" = masculine/feminine in Arabic)
+
+### Performance Optimization Strategy
+Implemented **virtualization + memoization + lazy loading**:
+
+**1. Virtual Scrolling for Tables**
+- Used `react-window` to render only visible rows
+- 500 shipments → only 20 DOM nodes (massive performance gain)
+- Smooth scrolling even with 10,000 rows
+
+**2. Memoization with React.memo**
+```typescript
+const ShipmentRow = React.memo(({ shipment }: Props) => {
+  // Only re-renders if shipment data changes
+  return <tr>...</tr>;
+}, (prev, next) => prev.shipment.id === next.shipment.id);
+```
+
+**3. Lazy Loading for Heavy Components**
+- Map view loaded on-demand (not part of initial bundle)
+- Excel export runs in Web Worker (non-blocking)
+- Chart libraries code-split
+
+**4. Optimistic Updates for Status Changes**
+- Update UI immediately (instant feedback)
+- Sync with backend in background
+- Rollback if API fails
+
+**Results**:
+- **60% reduction** in initial load time
+- Table interactions remain smooth at 500+ rows
+- Excel export doesn't freeze UI (Web Worker)
+
+### Role-Based Access Control System
+Built **declarative permission system**:
+
+```typescript
+// Backend middleware
+function requirePermission(permission: Permission) {
+  return (req, res, next) => {
+    const user = req.user;
+    if (!user.hasPermission(permission)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    next();
+  };
+}
+
+// Route example
+router.delete('/shipments/:id', 
+  requirePermission('delete_shipment'), 
+  deleteShipment
+);
+
+// Frontend HOC
+function withPermission(Component, permission) {
+  return (props) => {
+    const user = useAuth();
+    if (!user.hasPermission(permission)) {
+      return <AccessDenied />;
+    }
+    return <Component {...props} />;
+  };
+}
+```
+
+**Permission Granularity**:
+- **Admins**: `create_shipment`, `edit_shipment`, `delete_shipment`, `manage_users`
+- **Supervisors**: `view_shipments`, `update_status`
+
+**UI Adaptation**:
+- Delete button hidden for supervisors
+- Edit forms show as read-only
+- Bulk actions disabled for non-admins
+
+### Real-Time Tracking with QR Codes
+Implemented **QR-based shipment tracking**:
+- Each shipment gets unique QR code (generated at dispatch)
+- Customers scan QR to see live status
+- Status updates push to tracking page via polling
+- SMS notifications with tracking link
+
+**Tech Stack**:
+- QR generation: `qrcode.react`
+- Tracking page: Public route (no auth required)
+- Status updates: Long-polling (30s interval)
+
+### Advanced Reporting & Export
+Built **flexible reporting system**:
+- Date range filters (last 7 days, last month, custom)
+- Multi-select filters (status, courier, route)
+- Excel export with formatting (headers, colors, totals)
+- PDF reports for invoicing
+
+**Excel Export Challenge**:
+- 10,000+ rows cause memory issues
+- Solution: Streaming export (chunks of 500 rows)
+- Web Worker to avoid blocking UI
+- Download link generated when ready
+
+## Technical Decisions
+
+**Why i18next over react-intl?**
+- Better interpolation for complex plurals (Arabic has 6 plural forms)
+- Namespacing for large translation files
+- Lazy loading of translations per route
+- Context-aware translations (gender, case)
+
+**Why React-Window over React-Virtualized?**
+- Smaller bundle size (2KB vs 26KB)
+- Simpler API
+- Better performance for our use case
+- Active maintenance
+
+**Why Bootstrap over Material-UI?**
+- Client requirement (existing design system)
+- RTL support built-in with `bootstrap-rtl`
+- Familiarity for team (faster development)
+- Customizable via SASS variables
+
+**Why PostgreSQL over MongoDB?**
+- Relational data (shipments → routes → couriers)
+- ACID compliance for financial records
+- Strong TypeScript integration with Sequelize
+- Full-text search for shipment tracking
+
+## Impact
+
+### Business Metrics
+- **500+ contributions** over 2+ years
+- **80+ API integrations** across admin and tracking portals
+- **5+ languages** with full RTL/LTR support
+- **100-500 users** daily (admins, supervisors, customers)
+
+### Technical Achievements
+- **60% faster** load times through lazy loading and code splitting
+- **Zero layout bugs** in RTL languages (comprehensive testing)
+- **Sub-200ms** API response times for real-time tracking
+- **10,000+ row Excel exports** without UI freeze (Web Workers)
+
+### Developer Experience
+- Reusable i18n component library
+- Permission system prevents unauthorized access
+- Comprehensive Storybook for component demos
+- Automated E2E tests for critical workflows
+
+## What I'd Do Differently
+
+### Replace Bootstrap with Tailwind
+Would migrate to **Tailwind CSS**:
+- Built-in RTL support with `dir="rtl"` variant
+- No runtime CSS (better performance)
+- Smaller bundle (purge unused styles)
+- Current Bootstrap approach works but CSS is heavy
+
+### GraphQL for Complex Dashboards
+Would explore **GraphQL** instead of REST:
+- Dashboard needs 5+ API calls (shipments, routes, couriers, stats, notifications)
+- GraphQL reduces over-fetching
+- Single endpoint, better caching
+- Current REST approach has N+1 query problem
+
+### Server-Sent Events for Real-Time Updates
+Would replace **polling with SSE**:
+- 30-second polling is crude (wastes bandwidth)
+- SSE pushes updates instantly
+- Lower latency, better UX
+- Fallback to polling for old browsers
+
+### TypeScript from Day One
+Would enforce **strict TypeScript** from start:
+- Current codebase is mix of JS and TS
+- Type safety prevents runtime errors
+- Better autocomplete and refactoring
+- Migration mid-project was painful
+
+## Key Takeaways
+
+1. **RTL is more than mirroring** - requires direction-aware components and logical CSS properties
+2. **Virtualization is essential** for large datasets - render only what's visible
+3. **RBAC must be enforced** at both API and UI layers - frontend-only checks are security theater
+4. **Web Workers unlock non-blocking exports** - heavy processing shouldn't freeze UI
+5. **i18n is an architecture decision** - retrofitting internationalization is expensive
