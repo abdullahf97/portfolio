@@ -4,6 +4,7 @@ import { Hero } from "@/components/Hero";
 import { SystemBlueprint } from "@/components/SystemBlueprint";
 import { About } from "@/components/About";
 import { Experience } from "@/components/Experience";
+import { Challenges } from "@/components/Challenges";
 import { Contact } from "@/components/Contact";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
         <SystemBlueprint />
         <About />
         <Experience />
+        <Challenges />
         <Contact />
       </main>
       <Footer />
