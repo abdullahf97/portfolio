@@ -50,6 +50,46 @@
   }
 }
 
+@layer components {
+  /* System Blueprint - Hexagonal Nodes */
+  .hexagon {
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
+  }
+
+  /* Blueprint Connection Lines Animation */
+  @keyframes draw-line {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .blueprint-line {
+    animation: draw-line 2s ease-out forwards;
+  }
+
+  /* Blueprint Node Interactive States */
+  .blueprint-node {
+    cursor: pointer;
+    will-change: transform, opacity;
+  }
+
+  .blueprint-node:hover {
+    z-index: 100 !important;
+  }
+}
+
 @theme inline {
   --color-background: rgb(var(--background));
   --color-surface: rgb(var(--surface));
