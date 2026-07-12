@@ -1,0 +1,150 @@
+---
+title: "PayPagar"
+slug: "paypagar"
+subtitle: "Fintech Payroll Advance Platform"
+description: "5-app ecosystem for salary advance processing with multi-level approvals and dynamic form generation"
+industry: "fintech"
+portals: ["Brand Site", "Company Onboarding", "Admin/Checker Portal", "Company Portal", "Backend API"]
+tech: ["React", "TypeScript", "Redux", "Node.js", "PostgreSQL", "Express", "Sequelize"]
+metrics:
+  - { label: "Apps Built", value: "5" }
+  - { label: "Onboarding Reduction", value: "60%" }
+  - { label: "Input Types Supported", value: "15+" }
+challenges: ["Multi-level approval workflows", "Dynamic form generation", "Real-time validation"]
+order: 1
+featured: true
+---
+
+## The Problem
+
+PayPagar needed a comprehensive payroll advance platform where companies could onboard, get approved by multiple levels of checkers (admin and superadmin), and manage employee salary advance requests. The system required complex approval workflows, dynamic form generation based on company requirements, and seamless integration across five different portals.
+
+## What Made It Hard
+
+### Multi-Level Approval System
+The platform required a sophisticated approval workflow where:
+- Companies submit onboarding applications with custom fields
+- Admin checkers review and approve/reject applications
+- Superadmin checkers perform final verification
+- Each approval level required field-level granularity (specific fields could be flagged for revision)
+
+### Dynamic Form Generation
+Each company had unique onboarding requirements, requiring:
+- 15+ different input types (text, number, file upload, multi-select, etc.)
+- Runtime form generation based on company configuration
+- Real-time validation with custom rules
+- State management for complex nested forms
+
+### System Scale
+Managing state and data flow across 5 interconnected applications:
+- Brand site for marketing
+- Self-service company onboarding portal
+- Admin checker dashboard
+- Company management portal
+- Backend API coordinating everything
+
+## My Solution
+
+### Architecture Design
+Built a **5-app ecosystem** with clear separation of concerns:
+
+1. **Brand Site** - Next.js marketing site showcasing platform features
+2. **Company Onboarding Portal** - React SPA with Redux for complex form state
+3. **Admin/Checker Portal** - Dashboard for multi-level approval workflows
+4. **Company Portal** - Post-approval management interface
+5. **Backend API** - Node.js/Express with PostgreSQL for centralized data
+
+### Dynamic Form Engine
+Created a reusable form generation system:
+- JSON schema-based form definitions
+- 15+ input component types with validation
+- Real-time field-level validation
+- Nested form support with dynamic sections
+
+### Approval Workflow State Machine
+Implemented a state machine pattern for approval workflows:
+- Clear state transitions (Pending → Admin Review → Superadmin Review → Approved/Rejected)
+- Field-level comments and revision requests
+- Audit trail for all approval actions
+- Role-based access control
+
+### State Management Strategy
+Used Redux with normalized state shape:
+- Entities separated by domain (companies, applications, users)
+- Optimistic updates for better UX
+- Thunk middleware for async operations
+- Selector pattern for derived state
+
+## Technical Decisions
+
+**Why Redux over Context API?**
+- Complex state with deep nesting (multi-step forms)
+- Need for time-travel debugging
+- Multiple components reading same state
+- Clear action history for debugging approval workflows
+
+**Why Separate Apps vs Monolith?**
+- Different user personas with distinct needs
+- Independent deployment cycles
+- Reduced bundle size (brand site doesn't need form logic)
+- Team autonomy (frontend/backend teams could work independently)
+
+**Why PostgreSQL?**
+- ACID compliance critical for financial transactions
+- Complex relational data (companies → applications → approvals)
+- Built-in JSON support for dynamic form schemas
+- Strong TypeScript integration with Sequelize
+
+## Impact
+
+### Business Metrics
+- **60% reduction** in company onboarding time (from manual process)
+- **5 applications** delivered across the ecosystem
+- **15+ input types** supported in dynamic form system
+- **3-tier approval** workflow with field-level granularity
+
+### Technical Achievements
+- Zero-downtime deployment via Docker + AWS ECS
+- 95+ Lighthouse performance score on brand site
+- Sub-200ms API response times
+- Type-safe frontend-to-backend contracts
+
+### Developer Experience
+- Reusable form component library
+- Comprehensive Storybook documentation
+- Automated testing with Jest + React Testing Library
+- CI/CD pipeline with GitHub Actions
+
+## What I'd Do Differently
+
+### Form State Management
+Would explore **React Hook Form** or **Formik** instead of custom Redux solution:
+- Less boilerplate for form state
+- Built-in validation patterns
+- Better performance with uncontrolled components
+
+### API Design
+Would consider **GraphQL** for the admin portal:
+- Reduce over-fetching (admin dashboard needs specific fields)
+- Better type safety with generated types
+- Single endpoint for complex queries
+
+### Testing Strategy
+Would implement more **E2E tests** for approval workflows:
+- User flows are complex and prone to regression
+- Integration tests catch more bugs than unit tests
+- Playwright/Cypress would provide better confidence
+
+### Monitoring
+Would add **structured logging** and **APM** from day one:
+- Easier debugging of approval workflow issues
+- Performance monitoring for form submissions
+- User behavior analytics for UX improvements
+
+## Key Takeaways
+
+1. **Start with state machines** for complex workflows - they prevent invalid states
+2. **Separate concerns early** - 5 apps was the right call despite initial overhead
+3. **Dynamic forms are hard** - invest in solid abstractions before scaling
+4. **Field-level granularity matters** - users need precise feedback, not just "form invalid"
+5. **Redux isn't dead** - for complex state, it still provides the best DX
