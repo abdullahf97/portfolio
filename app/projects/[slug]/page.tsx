@@ -40,6 +40,8 @@ export async function generateMetadata({
   };
 }
 
+const BASE_URL = "https://portfolio-two-sepia-60.vercel.app";
+
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
@@ -50,8 +52,25 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const components = useMDXComponents({});
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: project.title,
+    description: project.description,
+    author: {
+      "@type": "Person",
+      name: "Abdullah Farooq",
+      url: BASE_URL,
+    },
+    url: `${BASE_URL}/projects/${slug}`,
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       <main className="flex-1">
         {/* Project Header */}
