@@ -2,21 +2,21 @@
 
 @layer base {
   :root {
-    --background: 250 250 252;
+    --background: 250 249 255;
     --surface: 255 255 255;
-    --text: 26 32 44;
-    --text-muted: 100 116 139;
-    --accent: 37 99 235;
-    --border: 226 232 240;
+    --text: 15 14 23;
+    --text-muted: 107 114 142;
+    --accent: 109 40 217;
+    --border: 229 228 242;
   }
 
   .dark {
-    --background: 10 15 28;
-    --surface: 19 26 46;
-    --text: 226 232 240;
-    --text-muted: 148 163 184;
-    --accent: 59 130 246;
-    --border: 30 41 59;
+    --background: 7 7 15;
+    --surface: 14 13 27;
+    --text: 241 240 251;
+    --text-muted: 148 145 172;
+    --accent: 167 139 250;
+    --border: 29 27 50;
   }
 }
 
@@ -87,6 +87,28 @@
 
   .blueprint-node:hover {
     z-index: 100 !important;
+  }
+
+  /* Signal flow: animated dashes along SVG connection lines */
+  @keyframes signal-flow {
+    from { stroke-dashoffset: 26; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Node floating: gentle bob with centering transform baked in */
+  @keyframes node-float {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    50%       { transform: translate(-50%, -50%) translateY(-10px); }
+  }
+
+  /* Hover pulse ring emanating from a node */
+  @keyframes pulse-ring {
+    0%   { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  .pulse-ring {
+    animation: pulse-ring 1.6s ease-out infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {

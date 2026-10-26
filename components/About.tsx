@@ -14,21 +14,24 @@ export function About() {
 
           <div className="prose prose-lg max-w-none text-text-muted space-y-6">
             <p>
-              I'm a Software Engineer with 3+ years of experience building B2B platforms that solve real business problems.
-              My specialty is <strong className="text-text">multi-portal architecture</strong> — designing systems where customer-facing apps,
-              vendor dashboards, and admin panels work together seamlessly.
+              I'm a Software Engineer with 3+ years of experience turning business ideas into running software.
+              When a client says "we need a platform for X," I figure out what that actually means to build —
+              the customer experience, the vendor tools, the admin controls, the backend, the infrastructure —
+              and I <strong className="text-text">ship all of it</strong>.
             </p>
 
             <p>
-              At Xavia Solutions, I've delivered 10+ production applications across logistics, fintech, hospitality, and sports booking.
-              I don't just build features — I architect systems that <strong className="text-text">scale</strong>, handle complex business logic,
-              and make users' lives easier.
+              At Xavia Solutions I've taken 10+ products from concept to production across logistics, fintech,
+              hospitality, and sports booking. No brief is too vague. I ask the right questions,
+              make the right architectural decisions, and own the work end-to-end until{" "}
+              <strong className="text-text">real users are using it</strong>.
             </p>
 
             <p>
-              What sets me apart? I handle the full stack — from React components to Node.js APIs to Docker deployments.
-              I've implemented <strong className="text-text">internationalization for 5+ languages</strong> with RTL support,
-              optimized load times by 60%, and set up CI/CD pipelines that reduced deployment time by 50%.
+              Full-stack in practice, not just on paper: React and TypeScript on the frontend,
+              Node.js APIs in the middle, Docker and CI/CD keeping it live.
+              I've shipped <strong className="text-text">internationalized products in 5 languages</strong> with RTL support,
+              cut load times by 69%, and set up deployment pipelines that reduced release time from 20 minutes to 5.
             </p>
           </div>
 

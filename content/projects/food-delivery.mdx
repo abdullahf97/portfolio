@@ -17,7 +17,7 @@ featured: true
 
 ## The Problem
 
-A food delivery platform needed three interconnected applications: a **customer app** for ordering food, a **vendor portal** for restaurants to manage menus and orders, and a **backend API** to orchestrate everything. The technical twist: the existing backend was built in **Ruby on Rails** with production authentication bugs, requiring a **mid-project migration to Node.js** while maintaining zero downtime for live orders.
+A food delivery platform needed three interconnected applications: a **customer app** for ordering food, a **vendor portal** for restaurants to manage menus and orders, and a **backend API** to orchestrate everything. The technical twist: the existing backend was built in **Ruby on Rails** with production authentication bugs, requiring a **mid-project migration to Node.js** for a live production system.
 
 ## What Made It Hard
 
@@ -34,7 +34,6 @@ The existing Rails backend had:
 - Frontend already deployed (can't change API contracts)
 - Database schema can't change (shared with Rails)
 - Must maintain session compatibility
-- Zero downtime requirement
 
 ### Location-Based Ordering with Google Maps
 Customers order from restaurants **based on proximity**:
@@ -271,7 +270,7 @@ Built **vendor portal** with:
 - **Real-time discount engine** increased promotion usage by 40%
 
 ### Technical Achievements
-- **Zero-downtime migration** from Rails to Node.js
+- **Incremental strangler-fig migration** from Rails to Node.js
 - **Sub-500ms** geolocation queries with Haversine
 - **Google Maps integration** with clustering for performance
 - **Discount evaluation** runs in under 50ms per cart update
@@ -318,4 +317,4 @@ Would implement **shadow traffic testing**:
 2. **Location features need spatial databases** - application-level distance calculations don't scale
 3. **Time-based scheduling is hard** - timezone, daylight saving, and edge cases multiply fast
 4. **Vendor portals reduce support load** - self-service beats manual menu updates
-5. **Migration without downtime is possible** - dual-run, compare, cutover, rollback plan
+5. **Incremental migration works** - dual-run, compare, cutover, rollback plan

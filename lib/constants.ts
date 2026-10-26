@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   name: "Abdullah Farooq",
   title: "Software Engineer",
-  tagline: "I architect multi-portal systems where customer, vendor, and admin applications work together at scale.",
+  tagline: "I don't just write code — I figure out what needs to exist, build every layer of it, and ship it to production.",
   url: "https://abdullahfarooq.dev",
   author: {
     name: "Abdullah Farooq",
@@ -18,6 +18,17 @@ export const SITE_CONFIG = {
     experience: "3+",
   },
 } as const;
+
+export const INDUSTRY_CONFIG: Record<
+  string,
+  { color: string; label: string }
+> = {
+  fintech: { color: "#10b981", label: "Fintech" },
+  hospitality: { color: "#f59e0b", label: "Hospitality" },
+  sports: { color: "#8b5cf6", label: "Sports Booking" },
+  logistics: { color: "#3b82f6", label: "Logistics" },
+  "food-delivery": { color: "#ef4444", label: "Food Delivery" },
+};
 
 export const NAV_ITEMS = [
   { label: "About", href: "#about" },
